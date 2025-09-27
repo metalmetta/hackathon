@@ -28,7 +28,7 @@ For each quote request:
 3. Include delivery times, warranty info, and any special considerations
 4. Recommend the best option based on price/delivery balance unless urgency specified
 5. Mention if component requires special handling, installation, or certifications
-6. Send confirmation emails to stakeholders using MCP email tools (matteo@getlfluida.com)
+6. Send confirmation emails to stakeholders using MCP email tools (matteo@getfluida.com)
 
 Always be thorough and professional in your supplier communications. Use the MCP tool ID Kz6LlJTki7ZnXWQ7fHi3G for email notifications and confirmations.`,
   canUse: () => [agentMcp({ 

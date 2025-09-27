@@ -686,7 +686,7 @@ Inventory Management System
                 console.log('MCP Email Tool Integration:', {
                     tool_id: 'Kz6LlJTki7ZnXWQ7fHi3G',
                     action: 'send_email',
-                    to: 'matteo@getlfluida.com',
+                    to: 'matteo@getfluida.com',
                     subject: emailSubject,
                     body: emailBody,
                     timestamp: new Date().toISOString(),
@@ -703,13 +703,13 @@ Inventory Management System
                 
                 // Show confirmation in chat
                 setTimeout(() => {
-                    addMessage(`📧 Order confirmation email queued for matteo@getlfluida.com (${poNumber})`, 'system', '📊 Supplier Quote Agent');
+                    addMessage(`📧 Order confirmation email queued for matteo@getfluida.com (${poNumber})`, 'system', '📊 Supplier Quote Agent');
                 }, 500);
 
             } catch (error) {
                 console.log('MCP Email simulation:', {
                     tool_id: 'Kz6LlJTki7ZnXWQ7fHi3G',
-                    to: 'matteo@getlfluida.com',
+                    to: 'matteo@getfluida.com',
                     subject: `Order Confirmation: ${componentInfo.componentType} Replacement - ${poNumber}`,
                     component: componentInfo.componentType,
                     po_number: poNumber,
@@ -719,7 +719,7 @@ Inventory Management System
                 
                 // Show confirmation even if actual email fails (for demo)
                 setTimeout(() => {
-                    addMessage(`📧 Order confirmation email sent to matteo@getlfluida.com (${poNumber})`, 'system', '📊 Supplier Quote Agent');
+                    addMessage(`📧 Order confirmation email sent to matteo@getfluida.com (${poNumber})`, 'system', '📊 Supplier Quote Agent');
                 }, 500);
             }
         }
@@ -733,7 +733,7 @@ Inventory Management System
             console.log('Inkeep MCP Email Trigger:', {
                 mcp_tool_id: 'Kz6LlJTki7ZnXWQ7fHi3G',
                 action: 'send_email',
-                recipient: 'matteo@getlfluida.com',
+                recipient: 'matteo@getfluida.com',
                 subject: subject,
                 body: body,
                 order_reference: poNumber,
