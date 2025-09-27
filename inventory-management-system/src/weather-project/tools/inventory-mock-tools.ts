@@ -4,7 +4,7 @@ import { mcpTool } from '@inkeep/agents-sdk';
 export const supplierMcpTool = mcpTool({
   id: 'Kz6LlJTki7ZnXWQ7fHi3G',
   name: 'Supplier Communication Tools',
-  serverUrl: 'https://api.inventory-system.com/mcp/supplier', // Email and notification MCP server
+  serverUrl: 'https://apollo.composio.dev/v3/mcp/954a760d-e169-4a18-a8a4-f3805142b10f/mcp?include_composio_helper_actions=true', // Email and notification MCP server
 });
 
 export const orderMcpTool = mcpTool({
