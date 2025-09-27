@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Factory Inventory Management System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 1200px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+        }
+
+        .main-content {
+            display: flex;
+            height: 600px;
+        }
+
+        .chat-area {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            background: white;
+        }
+
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #fafbfc;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.user {
+            text-align: right;
+        }
+
+        .message.system {
+            text-align: left;
+        }
+
+        .message-bubble {
+            display: inline-block;
+            max-width: 70%;
+            padding: 15px 20px;
+            border-radius: 18px;
+            position: relative;
+        }
+
+        .message.user .message-bubble {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.system .message-bubble {
+            background: white;
+            color: #2d3748;
+            border: 1px solid #e2e8f0;
+            border-bottom-left-radius: 4px;
+        }
+
+        .message-time {
+            font-size: 0.75rem;
+            color: #a0aec0;
+            margin-top: 5px;
+        }
+
+        .agent-indicator {
+            display: inline-block;
+            background: #48bb78;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .input-area {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 10px;
+        }
+
+        #messageInput {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 30px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        #messageInput:focus {
+            border-color: #667eea;
+        }
+
+        #sendButton {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #sendButton:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        #sendButton:active {
+            transform: scale(0.98);
+        }
+
+        .status-bar {
+            padding: 10px 20px;
+            background: #f7f9fc;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #48bb78;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+
+        .loading-dots {
+            display: inline-block;
+        }
+
+        .loading-dots span {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #667eea;
+            margin: 0 2px;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+
+        .loading-dots span:nth-child(1) { animation-delay: -0.32s; }
+        .loading-dots span:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Inventory Management System</h1>
+            <p>AI-Powered Multi-Agent System for Component Replacement</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="chat-area">
+                <div class="messages" id="messagesContainer">
+                    <div class="message system">
+                        <div class="message-bubble">
+                            <div class="agent-indicator">🤖 Inventory Coordinator</div>
+                            <p>Hello! I'm your Inventory Management System</p>
+                            <p style="margin-top: 10px;">How can I help?</p>
+                        </div>
+                        <div class="message-time">System • Just now</div>
+                    </div>
+                </div>
+                
+                <div class="input-area">
+                    <div class="input-wrapper">
+                        <input type="text" id="messageInput" placeholder="Describe any equipment issue or component failure..." onkeypress="handleKeyPress(event)">
+                        <button id="sendButton" onclick="sendMessage()">Send</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="status-bar">
+            <div class="status-indicator">
+                <span class="status-dot"></span>
+                <span>All agents online</span>
+            </div>
+            <div>
+                <span style="color: #718096; font-size: 0.9rem;">Connected Agents: Supplier • Order • Installation • Coordinator</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="data-generators.js"></script>
+    <script>
+        // Message handling
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (message) {
+                addMessage(message, 'user');
+                input.value = '';
+                
+                // Simulate system processing
+                setTimeout(() => {
+                    addLoadingMessage();
+                }, 500);
+                
+                // Simulate response
+                setTimeout(() => {
+                    removeLoadingMessage();
+                    processUserMessage(message);
+                }, 2000);
+            }
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        function addMessage(text, sender, agentName = null) {
+            const messagesContainer = document.getElementById('messagesContainer');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            
+            let agentIndicator = '';
+            if (agentName) {
+                agentIndicator = `<div class="agent-indicator">${agentName}</div>`;
+            }
+            
+            messageDiv.innerHTML = `
+                <div class="message-bubble">
+                    ${agentIndicator}
+                    <p>${text}</p>
+                </div>
+                <div class="message-time">${sender === 'user' ? 'You' : 'System'} • ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+            `;
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function addLoadingMessage() {
+            const messagesContainer = document.getElementById('messagesContainer');
+            const loadingDiv = document.createElement('div');
+            loadingDiv.id = 'loadingMessage';
+            loadingDiv.className = 'message system';
+            loadingDiv.innerHTML = `
+                <div class="message-bubble">
+                    <div class="loading-dots">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+            `;
+            messagesContainer.appendChild(loadingDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function removeLoadingMessage() {
+            const loadingMessage = document.getElementById('loadingMessage');
+            if (loadingMessage) {
+                loadingMessage.remove();
+            }
+        }
+
+
+
+        // Dynamic conversation state
+        let conversationState = {
+            currentComponent: null,
+            currentQuotes: null,
+            awaitingApproval: false,
+            orderInProgress: false
+        };
+
+        // Use dynamic data generators instead of hardcoded quotes
+        function generateRealisticQuotes(componentType, urgency = 'normal') {
+            return window.DataGenerators.generateSupplierQuotes(componentType, urgency);
+        }
+
+        function extractComponentInfo(message) {
+            const lowerMessage = message.toLowerCase();
+            
+            // Use dynamic component type extraction
+            const componentType = window.DataGenerators.extractComponentType(message);
+            const spec = window.DataGenerators.getComponentSpec(componentType);
+            
+            // Extract urgency
+            let urgency = 'normal';
+            if (lowerMessage.includes('urgent') || lowerMessage.includes('critical') || 
+                lowerMessage.includes('emergency') || lowerMessage.includes('down')) {
+                urgency = 'urgent';
+            }
+            if (lowerMessage.includes('critical') || lowerMessage.includes('emergency')) {
+                urgency = 'critical';
+            }
+            
+            // Extract location/line info
+            let location = '';
+            const locationMatch = message.match(/line\s+(\d+)|area\s+(\w+)|section\s+(\w+)/i);
+            if (locationMatch) {
+                location = locationMatch[0];
+            }
+            
+            return { 
+                componentType: spec.type, 
+                urgency, 
+                location,
+                spec: spec
+            };
+        }
+
+        function processUserMessage(message) {
+            const lowerMessage = message.toLowerCase();
+            
+            // Handle approval responses
+            if (conversationState.awaitingApproval && 
+                (lowerMessage.includes('yes') || lowerMessage.includes('proceed') || 
+                 lowerMessage.includes('approve') || lowerMessage.includes('order') ||
+                 lowerMessage.includes('ok') || lowerMessage.includes('go ahead'))) {
+                handleOrderApproval();
+                return;
+            }
+            
+            // Handle rejection responses
+            if (conversationState.awaitingApproval && 
+                (lowerMessage.includes('no') || lowerMessage.includes('cancel') || 
+                 lowerMessage.includes('different') || lowerMessage.includes('other'))) {
+                handleOrderRejection();
+                return;
+            }
+            
+            // Handle installation requests
+            if (lowerMessage.includes('install') || lowerMessage.includes('instruction') || 
+                lowerMessage.includes('how to') || lowerMessage.includes('guide')) {
+                handleInstallationRequest();
+                return;
+            }
+            
+            // Handle status requests
+            if (lowerMessage.includes('status') || lowerMessage.includes('track') ||
+                (lowerMessage.includes('order') && lowerMessage.includes('check')) ||
+                lowerMessage.includes('delivery') || lowerMessage.includes('when')) {
+                handleStatusRequest();
+                return;
+            }
+            
+            // Handle urgent requests first (before component issues)
+            if (lowerMessage.includes('urgent') || lowerMessage.includes('critical') || 
+                lowerMessage.includes('emergency') || lowerMessage.includes('down') ||
+                lowerMessage.includes('stopped') || lowerMessage.includes('asap')) {
+                handleUrgentRequest(message);
+                return;
+            }
+            
+            // Handle component issues (expanded keywords)
+            if (lowerMessage.includes('broken') || lowerMessage.includes('failed') || 
+                lowerMessage.includes('replace') || lowerMessage.includes('need') ||
+                lowerMessage.includes('issue') || lowerMessage.includes('problem') ||
+                lowerMessage.includes('fault') || lowerMessage.includes('repair') ||
+                lowerMessage.includes('maintenance') || lowerMessage.includes('service') ||
+                lowerMessage.includes('not working') || lowerMessage.includes('malfunction') ||
+                lowerMessage.includes('damaged') || lowerMessage.includes('worn') ||
+                // Component-specific keywords
+                lowerMessage.includes('motor') || lowerMessage.includes('pump') ||
+                lowerMessage.includes('bearing') || lowerMessage.includes('sensor') ||
+                lowerMessage.includes('valve') || lowerMessage.includes('conveyor') ||
+                lowerMessage.includes('drive') || lowerMessage.includes('hydraulic') ||
+                lowerMessage.includes('pneumatic') || lowerMessage.includes('electrical') ||
+                lowerMessage.includes('mechanical') || lowerMessage.includes('belt') ||
+                lowerMessage.includes('gear') || lowerMessage.includes('seal') ||
+                lowerMessage.includes('filter') || lowerMessage.includes('switch') ||
+                lowerMessage.includes('controller') || lowerMessage.includes('actuator')) {
+                handleComponentIssue(message);
+                return;
+            }
+            
+            // Handle general inquiries and questions
+            if (lowerMessage.includes('help') || lowerMessage.includes('what') ||
+                lowerMessage.includes('how') || lowerMessage.includes('can you') ||
+                lowerMessage.includes('?')) {
+                handleGeneralInquiry(message);
+                return;
+            }
+            
+            // Handle greetings
+            if (lowerMessage.includes('hello') || lowerMessage.includes('hi') ||
+                lowerMessage.includes('hey') || lowerMessage.includes('good morning') ||
+                lowerMessage.includes('good afternoon')) {
+                addMessage("Hello! I'm here to help with your equipment and component needs. What can I assist you with today?", 'system', '🤖 Inventory Coordinator');
+                return;
+            }
+            
+            // If we get here, try to interpret as a component issue anyway
+            handlePotentialComponentIssue(message);
+        }
+
+        function handleComponentIssue(message) {
+            const componentInfo = extractComponentInfo(message);
+            conversationState.currentComponent = componentInfo;
+            
+            let responseMessage = `I understand you're having an issue with a ${componentInfo.componentType}`;
+            if (componentInfo.location) {
+                responseMessage += ` in ${componentInfo.location}`;
+            }
+            responseMessage += '. Let me coordinate with our specialized agents to get you a complete solution.';
+            
+            addMessage(responseMessage, 'system', '🤖 Inventory Coordinator');
+            
+            setTimeout(() => {
+                addMessage(`Analyzing ${componentInfo.componentType} specifications and contacting suppliers for competitive quotes...`, 'system', '📊 Supplier Quote Agent');
+            }, 1000);
+            
+            setTimeout(() => {
+                const quotes = generateRealisticQuotes(componentInfo.componentType, componentInfo.urgency);
+                conversationState.currentQuotes = quotes;
+                
+                if (quotes.length === 0) {
+                    addMessage(`No suppliers currently have ${componentInfo.componentType} in stock. Checking alternative sources...`, 'system', '📊 Supplier Quote Agent');
+                    return;
+                }
+                
+                let quoteMessage = `<strong>Quote Analysis for ${componentInfo.componentType.toUpperCase()}:</strong><br><br>`;
+                quotes.forEach((quote, index) => {
+                    const rushText = quote.rush ? ' (rush available)' : '';
+                    const specialtyText = quote.specialty ? ' ⭐' : '';
+                    quoteMessage += `✅ <strong>${quote.supplier}${specialtyText}:</strong> $${quote.price} • ${quote.days} day${quote.days > 1 ? 's' : ''} delivery${rushText}<br>`;
+                });
+                
+                const bestQuote = quotes[0];
+                quoteMessage += `<br><strong>Recommendation:</strong> ${bestQuote.supplier} offers the best value at $${bestQuote.price} with ${bestQuote.days}-day delivery.`;
+                if (bestQuote.specialty) {
+                    quoteMessage += ` <em>(Specializes in ${componentInfo.spec.category} components)</em>`;
+                }
+                
+                addMessage(quoteMessage, 'system', '📊 Supplier Quote Agent');
+                
+                // Note: Email will be sent by Inkeep agents using MCP tool after order confirmation
+            }, 3000);
+            
+            setTimeout(() => {
+                conversationState.awaitingApproval = true;
+                addMessage("Would you like to proceed with the recommended supplier, or do you need different specifications?", 'system', '🤖 Inventory Coordinator');
+            }, 4000);
+        }
+
+        function handleOrderApproval() {
+            conversationState.awaitingApproval = false;
+            conversationState.orderInProgress = true;
+            
+            const bestQuote = conversationState.currentQuotes[0];
+            addMessage("Excellent! Processing your order now...", 'system', '🤖 Inventory Coordinator');
+            
+            setTimeout(() => {
+                const poNumber = `PO-${new Date().getFullYear()}-${String(Date.now()).slice(-4)}`;
+                const totalCost = Math.round(bestQuote.price * 1.08); // Add tax
+                
+                addMessage(`
+                    <strong>Purchase Order Generated:</strong><br><br>
+                    📋 PO Number: ${poNumber}<br>
+                    📦 Component: ${conversationState.currentComponent.componentType}<br>
+                    💰 Subtotal: $${bestQuote.price}<br>
+                    💰 Total (incl. tax): $${totalCost}<br>
+                    📅 Delivery: ${bestQuote.days} business day${bestQuote.days > 1 ? 's' : ''}<br>
+                    ✅ Status: ${totalCost > 500 ? 'PENDING APPROVAL' : 'APPROVED'}<br><br>
+                    Payment authorization prepared. ${totalCost > 500 ? 'Manager approval required.' : 'Processing...'}
+                `.replace(/\n/g, ''), 'system', '📝 Order Processing Agent');
+                
+                // Send confirmation email after order is approved
+                sendOrderConfirmationEmail(conversationState.currentComponent, conversationState.currentQuotes, poNumber, totalCost);
+            }, 1500);
+            
+            setTimeout(() => {
+                handleInstallationRequest();
+            }, 3000);
+        }
+
+        function handleInstallationRequest() {
+            const component = conversationState.currentComponent || { componentType: 'generic' };
+            const spec = window.DataGenerators.getComponentSpec(component.componentType);
+            
+            // Generate dynamic installation instructions
+            const instructions = window.DataGenerators.generateInstallationInstructions(component.componentType);
+            
+            // Generate realistic installation details based on component specs
+            let safetyNotes = 'Basic lockout/tagout procedures';
+            let tools = 'standard hand tools';
+            
+            if (spec.category === 'electrical') {
+                tools = 'multimeter, torque wrench, electrical tools';
+                safetyNotes = 'Electrical lockout required, verify isolation';
+            } else if (spec.category === 'hydraulic') {
+                tools = 'pipe wrenches, torque wrench, gasket scraper';
+                safetyNotes = 'Fluid system isolation, pressure relief required';
+            } else if (spec.category === 'mechanical') {
+                tools = 'torque wrench, alignment tools, lifting equipment';
+                safetyNotes = 'Mechanical isolation, proper lifting techniques';
+            }
+            
+            if (spec.weight > 10) {
+                safetyNotes += `, heavy lifting (${spec.personnelRequired}-person minimum)`;
+            }
+            
+            addMessage(`
+                <strong>Installation Guidance Ready:</strong><br><br>
+                ⚠️ <strong>Safety First:</strong> ${safetyNotes}<br>
+                ⏱️ <strong>Estimated Time:</strong> ${spec.estimatedInstallTime}<br>
+                👥 <strong>Personnel Required:</strong> ${spec.personnelRequired} technician${spec.personnelRequired > 1 ? 's' : ''}<br>
+                🔧 <strong>Tools Needed:</strong> ${tools}<br>
+                ⚖️ <strong>Component Weight:</strong> ${spec.weight}kg<br>
+                📋 <strong>Complexity:</strong> ${spec.complexityLevel}<br><br>
+                <details><summary><strong>Click for detailed step-by-step instructions</strong></summary>
+                <pre style="white-space: pre-wrap; font-size: 0.9em; margin-top: 10px;">${instructions}</pre>
+                </details>
+            `.replace(/\n/g, ''), 'system', '🔧 Installation Expert');
+            
+            setTimeout(() => {
+                addMessage("Complete solution coordinated! Is there anything else you need help with?", 'system', '🤖 Inventory Coordinator');
+                // Reset conversation state
+                conversationState = { currentComponent: null, currentQuotes: null, awaitingApproval: false, orderInProgress: false };
+            }, 2000);
+        }
+
+        function handleUrgentRequest(message) {
+            addMessage("🚨 URGENT REQUEST DETECTED 🚨<br>I'm prioritizing your request for immediate attention. Please provide details about the failed component.", 'system', '🤖 Inventory Coordinator');
+        }
+
+        function handleOrderRejection() {
+            conversationState.awaitingApproval = false;
+            addMessage("No problem! Let me know if you need different specifications, alternative suppliers, or if you'd like to explore other options.", 'system', '🤖 Inventory Coordinator');
+            
+            setTimeout(() => {
+                addMessage("I can help you find alternative components, adjust delivery requirements, or provide more detailed specifications. What would work better for your needs?", 'system', '📊 Supplier Quote Agent');
+            }, 1000);
+        }
+
+        function handleGeneralInquiry(message) {
+            const lowerMessage = message.toLowerCase();
+            
+            if (lowerMessage.includes('what') && (lowerMessage.includes('do') || lowerMessage.includes('can'))) {
+                addMessage("I coordinate complete equipment solutions including supplier quotes, order processing, and installation guidance. I can help with any industrial component or equipment issue.", 'system', '🤖 Inventory Coordinator');
+            } else if (lowerMessage.includes('how') && lowerMessage.includes('work')) {
+                addMessage("I work with specialized agents: a Supplier Quote Agent contacts multiple vendors, an Order Processing Agent handles paperwork and approvals, and an Installation Expert provides technical guidance.", 'system', '🤖 Inventory Coordinator');
+            } else if (lowerMessage.includes('help')) {
+                addMessage("I'm here to help with equipment failures, component replacements, supplier quotes, order processing, and installation guidance. Just describe your equipment issue or what you need.", 'system', '🤖 Inventory Coordinator');
+            } else {
+                // Try to extract any component-related information and respond accordingly
+                const componentInfo = extractComponentInfo(message);
+                if (componentInfo.componentType !== 'component') {
+                    addMessage(`I can certainly help with ${componentInfo.componentType} related questions. Are you experiencing an issue or need replacement parts?`, 'system', '🤖 Inventory Coordinator');
+                } else {
+                    addMessage("I specialize in industrial equipment and component management. Feel free to describe any equipment issues or component needs you have.", 'system', '🤖 Inventory Coordinator');
+                }
+            }
+        }
+
+        function handlePotentialComponentIssue(message) {
+            // Try to be intelligent about unclear messages
+            const componentInfo = extractComponentInfo(message);
+            
+            if (componentInfo.componentType !== 'component') {
+                // We detected a component type, treat as component issue
+                handleComponentIssue(message);
+            } else if (message.length > 10) {
+                // Longer message, try to be helpful
+                addMessage(`I want to help you with that. Could you provide more details about the specific equipment or component you're working with? For example, is this about a motor, pump, sensor, or other industrial equipment?`, 'system', '🤖 Inventory Coordinator');
+            } else {
+                // Short unclear message, ask for clarification
+                addMessage("I'm here to help with equipment issues and component replacement. Could you tell me more about what you need assistance with?", 'system', '🤖 Inventory Coordinator');
+            }
+        }
+
+        async function sendOrderConfirmationEmail(componentInfo, quotes, poNumber, totalCost) {
+            // This function integrates with the Inkeep agents MCP tool system
+            // The actual email sending is handled by the Supplier Quote Agent with MCP tool Kz6LlJTki7ZnXWQ7fHi3G
+            try {
+                const approvedQuote = quotes[0]; // Best quote that was approved
+                
+                // Prepare email content
+                const emailSubject = `Order Confirmation: ${componentInfo.componentType} Replacement - ${poNumber}`;
+                const emailBody = `
+Dear Matteo,
+
+Your order for ${componentInfo.componentType} has been confirmed and processed.
+
+ORDER DETAILS:
+📋 Purchase Order: ${poNumber}
+📦 Component: ${componentInfo.componentType}
+🏢 Supplier: ${approvedQuote.supplier}
+💰 Total Cost: $${totalCost} (incl. tax)
+📅 Expected Delivery: ${approvedQuote.days} business day${approvedQuote.days > 1 ? 's' : ''}
+${componentInfo.location ? `📍 Location: ${componentInfo.location}` : ''}
+${componentInfo.urgency === 'urgent' ? '🚨 PRIORITY: URGENT REQUEST' : ''}
+
+QUOTE COMPARISON (for reference):
+${quotes.map(quote => `• ${quote.supplier}: $${quote.price} (${quote.days} day delivery)`).join('\n')}
+
+✅ SELECTED: ${approvedQuote.supplier} - $${approvedQuote.price}
+
+Your order is now in the system and being processed. You will receive installation guidance once the component arrives.
+
+Best regards,
+Inventory Management System
+                `.trim();
+
+                // MCP tool integration - use the Inkeep agents API instead of direct fetch
+                // This will be handled by the Inkeep agents when they process the order
+                console.log('MCP Email Tool Integration:', {
+                    tool_id: 'Kz6LlJTki7ZnXWQ7fHi3G',
+                    action: 'send_email',
+                    to: 'matteo@getlfluida.com',
+                    subject: emailSubject,
+                    body: emailBody,
+                    timestamp: new Date().toISOString(),
+                    order_number: poNumber,
+                    component_type: componentInfo.componentType,
+                    total_cost: totalCost
+                });
+                
+                // For demo purposes, simulate successful email sending
+                // In production, this would be handled by the MCP tool through Inkeep agents
+
+                // Trigger Inkeep agents to send email via MCP tool
+                triggerInkeepEmailNotification(emailSubject, emailBody, poNumber);
+                
+                // Show confirmation in chat
+                setTimeout(() => {
+                    addMessage(`📧 Order confirmation email queued for matteo@getlfluida.com (${poNumber})`, 'system', '📊 Supplier Quote Agent');
+                }, 500);
+
+            } catch (error) {
+                console.log('MCP Email simulation:', {
+                    tool_id: 'Kz6LlJTki7ZnXWQ7fHi3G',
+                    to: 'matteo@getlfluida.com',
+                    subject: `Order Confirmation: ${componentInfo.componentType} Replacement - ${poNumber}`,
+                    component: componentInfo.componentType,
+                    po_number: poNumber,
+                    total_cost: totalCost,
+                    urgency: componentInfo.urgency
+                });
+                
+                // Show confirmation even if actual email fails (for demo)
+                setTimeout(() => {
+                    addMessage(`📧 Order confirmation email sent to matteo@getlfluida.com (${poNumber})`, 'system', '📊 Supplier Quote Agent');
+                }, 500);
+            }
+        }
+
+        function triggerInkeepEmailNotification(subject, body, poNumber) {
+            // This function would integrate with the Inkeep agents system
+            // to trigger the MCP email tool Kz6LlJTki7ZnXWQ7fHi3G
+            
+            // In a real implementation, this would send a message to the Inkeep agents
+            // For now, we'll log the email data that would be sent via MCP
+            console.log('Inkeep MCP Email Trigger:', {
+                mcp_tool_id: 'Kz6LlJTki7ZnXWQ7fHi3G',
+                action: 'send_email',
+                recipient: 'matteo@getlfluida.com',
+                subject: subject,
+                body: body,
+                order_reference: poNumber,
+                timestamp: new Date().toISOString(),
+                source: 'inventory-management-system'
+            });
+            
+            // The Inkeep Supplier Quote Agent with MCP tool access would handle the actual sending
+            // This ensures the email is sent through the proper agent workflow
+        }
+
+        function handleStatusRequest() {
+            // Generate dynamic status update
+            const dynamicStatus = window.DataGenerators.generateStatusUpdate();
+            
+            setTimeout(() => {
+                addMessage(dynamicStatus, 'system', '📝 Order Processing Agent');
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

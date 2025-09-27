@@ -1,0 +1,19 @@
+{
+  "name": "@inventory/system",
+  "version": "1.0.0",
+  "description": "Factory Inventory Management System using Inkeep Agents",
+  "main": "index.ts",
+  "scripts": {
+    "dev": "cd ../.. && pnpm dev",
+    "push": "inkeep push",
+    "chat": "inkeep chat",
+    "serve": "npx serve ./web -p 8080"
+  },
+  "dependencies": {
+    "@inkeep/agents-sdk": "^1.0.0",
+    "@inkeep/agents-cli": "^1.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
